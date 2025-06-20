@@ -1,78 +1,55 @@
+import functions
+
 menu = """
 
 [d] Depositar
 [s] Sacar
 [e] Extrato
+[c] Cadastrar
 [q] Sair
 
 => """
-
-saldo = 0
-limite = 500
-extrato = ""
-numero_saques = 0
-LIMITE_SAQUES = 3
+print("\n================ BANCO PYTHÔNICO ================")
+print("Bem-vindo ao Banco Pythônico!")
+usuario = input("Informe o número de sua conta: ")
 
 while True:
-
-    print("\n================ BANCO PYTHÔNICO ================")
-    print("Bem-vindo ao Banco Pythônico!")
     print("Selecione uma das opções abaixo:")
 
     opcao = input(menu)
 
     if opcao == "d":
         valor = float(input("Informe o valor do depósito: ").replace(',', '.')) #O replace permite que o usuário informe o valor com vírgula OU ponto sem gerar erro.
-
-        verificar_numero = str(valor).split('.')[1]            #Verifica se o usuário digitou um valor válido para centavos
-        if len(verificar_numero) > 2:
-            print("Operação falhou! O valor informado é inválido para os centavos.")
-            continue
-
-        if valor > 0:
-            saldo += valor
-            extrato += f"Depósito: R$ {valor:.2f}\n"
-            print(f"Depósito de {valor:.2f} realizado com sucesso! Saldo atual: R$ {saldo:.2f}")
-
-        else:
-            print("Operação falhou! O valor informado é inválido.")
+        resultado, saldo, extrato = functions.depositar(valor)
+        print(resultado)
 
     elif opcao == "s":
         valor = float(input("Informe o valor do saque: ").replace(',', '.'))
-
-        excedeu_saldo = valor > saldo
-
-        excedeu_limite = valor > limite
-
-        excedeu_saques = numero_saques >= LIMITE_SAQUES
-
-        if excedeu_saldo:
-            print("Operação falhou! Você não tem saldo suficiente.")
-
-        elif excedeu_limite:
-            print("Operação falhou! O valor do saque excede o limite.")
-
-        elif excedeu_saques:
-            print("Operação falhou! Número máximo de saques por período excedido.")
-
-        elif valor > 0:
-            saldo -= valor
-            extrato += f"Saque: R$ {valor:.2f}\n"
-            numero_saques += 1
-            print("Sucesso!\nAguarde o processamento do saque e retire seu dinheiro!")
-
-        else:
-            print("Operação falhou! O valor informado é inválido.")
+        resultado, saldo, extrato = functions.sacar(valor)
+        print(resultado)
 
     elif opcao == "e":
-        print("\n================ EXTRATO ================")
-        print("Não foram realizadas movimentações." if not extrato else extrato)
-        print(f"\nSaldo: R$ {saldo:.2f}")
-        print("==========================================")
+        print(functions.obter_extrato())
 
     elif opcao == "q":
         print("Obrigado por utilizar o Banco Pythônico! Até logo!")
         break
+
+    elif opcao == "c":
+        print("Seja bem-vindo(a) ao cadastro de clientes do Banco Pythônico!")
+        cpf = input("Informe o seu CPF (apenas números): ")
+        if functions.cpf_existe(functions.dic_cadastrados, cpf):
+            print("CPF já cadastrado. Por favor, tente novamente com outro CPF.")
+        
+        nome = input("Informe o seu nome completo: ")
+        data_nascimento = input("Informe a sua data de nascimento (DD/MM/AAAA): ")
+        logradouro = input("Informe o seu logradouro (rua, avenida, etc.): ")
+        num_casa = input("Informe o número de sua residência: ")
+        bairro = input("Informe o seu bairro: ")
+        cidade = input("Informe sua cidade com a sigla de seu estado (ex. São José dos Campos - SP): ")
+        endereço = logradouro + ", " + num_casa + ", " + bairro + ", " + cidade
+        resultado = functions.criar_conta(nome, data_nascimento, cpf, endereço)
+        print(resultado)
 
     else:
         print("Operação inválida, por favor selecione novamente a operação desejada.")
